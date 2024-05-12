@@ -11,6 +11,7 @@ use super::{Card, Deck, Hand, HandType, Rank, Suit};
 pub enum DeckType {
     Standard,
     NoFaceCards,
+    Checkered,
 }
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq, EnumIter, Display)]
@@ -73,13 +74,13 @@ impl HandSetup {
             TestType::DrawIntoOpenStraightMissingTwo => HashSet::from([
                 Card::new(Rank::Three, Suit::Spade),
                 Card::new(Rank::Four, Suit::Heart),
-                Card::new(Rank::Five, Suit::Diamond),
+                Card::new(Rank::Five, Suit::Heart),
             ]),
             TestType::DrawIntoOpenStraightMissingOne => HashSet::from([
                 Card::new(Rank::Three, Suit::Spade),
                 Card::new(Rank::Four, Suit::Heart),
-                Card::new(Rank::Five, Suit::Diamond),
-                Card::new(Rank::Six, Suit::Club),
+                Card::new(Rank::Five, Suit::Heart),
+                Card::new(Rank::Six, Suit::Spade),
             ]),
             TestType::DrawIntoFlushMissingTwo => HashSet::from([
                 Card::new(Rank::Three, Suit::Spade),
@@ -95,13 +96,13 @@ impl HandSetup {
             TestType::DrawIntoFullHouseFromThreeOfAKind => HashSet::from([
                 Card::new(Rank::Three, Suit::Spade),
                 Card::new(Rank::Three, Suit::Heart),
-                Card::new(Rank::Three, Suit::Diamond),
+                Card::new(Rank::Three, Suit::Heart),
             ]),
             TestType::DrawIntoFullHouseFromTwoPair => HashSet::from([
                 Card::new(Rank::Three, Suit::Spade),
                 Card::new(Rank::Three, Suit::Heart),
-                Card::new(Rank::Five, Suit::Diamond),
-                Card::new(Rank::Five, Suit::Club),
+                Card::new(Rank::Five, Suit::Heart),
+                Card::new(Rank::Five, Suit::Spade),
             ]),
         };
         self.initial_hand_size = self.initial_hand.len().try_into().expect("Initial hand size should fit in a u32");
@@ -196,11 +197,19 @@ impl Setup {
         }
 
         self.deck.reset();
-        Card::for_every(|card| {
+        Card::for_every(|mut card| {
             if self.hand_setup.initial_hand.contains(&card) { return; }
             if self.deck_type == DeckType::NoFaceCards {
                 if let Rank::King | Rank::Queen | Rank::Jack = card.rank() {
                     return;
+                }
+            }
+            if self.deck_type == DeckType::Checkered {
+                if *card.suit() == Suit::Club {
+                    card.change_suit(Suit::Spade);
+                }
+                else if *card.suit() == Suit::Diamond {
+                    card.change_suit(Suit::Heart);
                 }
             }
             self.deck.add_card(card);

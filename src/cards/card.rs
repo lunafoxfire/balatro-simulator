@@ -34,7 +34,11 @@ impl Card {
                 f(Card::new(rank, suit));
             }
         }
-    } 
+    }
+
+    pub fn change_suit(&mut self, suit: Suit) {
+        self.suit = suit;
+    }
 }
 
 impl fmt::Display for Card {
