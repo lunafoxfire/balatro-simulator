@@ -4,7 +4,7 @@ mod tests;
 
 use std::{cmp, collections::HashSet};
 use itertools::Itertools;
-use strum::{Display, EnumIter, IntoEnumIterator};
+use strum::{Display, EnumIter};
 use super::{Card, Deck, Hand, HandType, Rank, Suit};
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq, EnumIter, Display)]
